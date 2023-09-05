@@ -4,13 +4,13 @@ erDiagram
     id INT PK
     name VARCHAR(255)
     password VARCHAR(255)
-    accessToken VARCHAR(255)
     refreshToken VARCHAR(255)
   }
 
   UserLog {
     id INT PK
     actionName VARCHAR(255)
+    additionalData JSON
   }
   
   Machine {

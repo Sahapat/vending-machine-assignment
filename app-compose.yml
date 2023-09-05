@@ -1,0 +1,50 @@
+version: "3"
+services:
+  backend:
+    build:
+      context: backend
+      dockerfile: Dockerfile
+      args:
+        DOCKER_ENV: dev
+    container_name: vending-backend
+    volumes:
+      - ./container-data/statics:/data/statics
+    restart: always
+    networks:
+      - app-network
+      - postgres-network
+  frontend:
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+      args:
+        BUILD_ENV: .env.dev
+    container_name: vending-frontend
+    networks:
+      - app-network
+      - postgres-network
+    depends_on:
+      - backend
+  nginx:
+    image: nginx:alpine
+    container_name: nginx_proxy
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - ./nginx/confs:/etc/nginx/conf.d/
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/certs:/etc/nginx/ssl
+    ports:
+      - "4001:80"
+      - "4002:443"
+    networks:
+      - app-network
+      - postgres-network
+    depends_on:
+      - frontend
+      - backend
+networks:
+  app-network:
+  postgres-network:
+    external: true
+    
